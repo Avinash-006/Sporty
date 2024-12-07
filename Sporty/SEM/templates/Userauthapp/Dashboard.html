@@ -1,0 +1,128 @@
+{% extends 'Navbar/Navbar.html' %}
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f3f4f6; /* Light background */
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100">
+
+{% block body %}
+
+    <!-- Dashboard Header -->
+    <header class="bg-blue-600 py-4 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <h1 class="text-white text-2xl font-bold">Sports Dashboard</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+        <!-- Live Updates Section -->
+        <section class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Live Updates</h2>
+            <div id="live-updates-container" class="space-y-4">
+                <p class="text-center text-gray-500">Fetching live updates...</p>
+            </div>
+        </section>
+
+        <!-- Upcoming Events Section -->
+        <section class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Upcoming Events</h2>
+            <div id="events-container" class="space-y-4">
+                <p class="text-center text-gray-500">Fetching events...</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Fetch Live Updates
+        async function fetchLiveUpdates() {
+            try {
+                const response = await fetch("/api/live-updates");  // Change to your live updates API endpoint
+                if (!response.ok) throw new Error('Error fetching live updates');
+                const updates = await response.json();
+                const updatesContainer = document.getElementById('live-updates-container');
+
+                // Clear previous updates
+                updatesContainer.innerHTML = '';
+
+                // Loop through live updates
+                updates.forEach(update => {
+                    const updateItem = document.createElement('div');
+                    updateItem.classList.add('p-4', 'bg-gray-100', 'rounded-lg', 'shadow-md');
+
+                    updateItem.innerHTML = `
+                        <h3 class="text-lg font-bold">${update.title}</h3>
+                        <p>${update.description}</p>
+                        <span class="text-gray-500 text-sm">${new Date(update.timestamp).toLocaleString()}</span>
+                    `;
+
+                    updatesContainer.appendChild(updateItem);
+                });
+            } catch (error) {
+                console.error('Error fetching live updates:', error);
+                document.getElementById('live-updates-container').innerHTML = '<p class="text-red-500 text-center">Error fetching live updates. Try again later.</p>';
+            }
+        }
+
+        // Fetch Upcoming Events
+        async function fetchUpcomingEvents() {
+            try {
+                const response = await fetch("/api/upcoming-events");  // Change to your events API endpoint
+                if (!response.ok) throw new Error('Error fetching events');
+                const events = await response.json();
+                const eventsContainer = document.getElementById('events-container');
+
+                // Clear previous events
+                eventsContainer.innerHTML = '';
+
+                // Loop through events
+                events.forEach(event => {
+                    const eventItem = document.createElement('div');
+                    eventItem.classList.add('p-4', 'bg-gray-100', 'rounded-lg', 'shadow-md');
+
+                    eventItem.innerHTML = `
+                        <h3 class="text-lg font-bold">${event.name}</h3>
+                        <p>${event.location} - ${new Date(event.date).toLocaleString()}</p>
+                        <span class="text-gray-500 text-sm">Starts in: ${calculateTimeRemaining(event.date)} days</span>
+                    `;
+
+                    eventsContainer.appendChild(eventItem);
+                });
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                document.getElementById('events-container').innerHTML = '<p class="text-red-500 text-center">Error fetching events. Try again later.</p>';
+            }
+        }
+
+        // Helper function to calculate time remaining for events
+        function calculateTimeRemaining(eventDate) {
+            const currentDate = new Date();
+            const eventTime = new Date(eventDate);
+            const timeDiff = eventTime - currentDate;
+            return Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Days remaining
+        }
+
+        // Initial fetch for both live updates and events
+        fetchLiveUpdates();
+        fetchUpcomingEvents();
+
+        // Refresh live updates every 30 seconds
+        setInterval(fetchLiveUpdates, 30000);
+
+        // Refresh events every minute (or longer depending on event schedule frequency)
+        setInterval(fetchUpcomingEvents, 60000);
+    </script>
+{% endblock %}
+</body>
+</html>

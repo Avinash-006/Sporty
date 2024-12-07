@@ -1,0 +1,19 @@
+{% extends 'Navbar/AdminNavbar.html' %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>{% block body %}
+<h1>Are you sure you want to delete the event "{{ event.event_name }}"?</h1>
+<p>{{ event.description }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+    <a href="{% url 'event_list' %}">Cancel</a>
+</form>
+
+{% end block %}
+</body>
+</html>

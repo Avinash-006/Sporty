@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom dark theme styles */
+        body {
+            background-color: #121212; /* Dark background for the page */
+            color: #e0e0e0; /* Light text color for contrast */
+        }
+
+        .form-container {
+            animation: fadeIn 1s ease-in-out;
+            background-color: #1e1e1e; /* Dark background for the form */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Title Styling */
+        .login-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f57c00;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+            margin-bottom: 20px;
+        }
+
+        /* Input fields */
+        .input-field {
+            background-color: #2c2c2c; /* Darker background for inputs */
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 12px;
+            width: 100%;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border: 1px solid #f57c00;
+            box-shadow: 0 0 8px rgba(245, 124, 0, 0.5);
+        }
+
+        /* Button Styling */
+        .btn {
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            background-color: #f57c00;
+            border: none;
+            color: white;
+            text-decoration: none;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #ff9800;
+            transform: scale(1.05); /* Button enlarges on hover */
+        }
+
+        /* Error Messages */
+        .error-msg {
+            color: #ff5f5f;
+            margin-top: 10px;
+        }
+
+        /* Keyframe for fade-in animation */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+
+    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-sm form-container">
+        <h1 class="login-title text-center">Sporty</h1>
+
+        <!-- Login Form -->
+        <form method="POST" action="{% url 'signin' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Username Field -->
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium text-gray-400">Username:</label>
+                <input type="text" name="username" id="username" placeholder="Enter your username..."
+                       class="input-field mt-1">
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-400">Password:</label>
+                <input type="password" name="password" id="password" placeholder="Enter your password..."
+                       class="input-field mt-1">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn">
+                Login
+            </button>
+
+            <!-- Display error messages -->
+            {% if form.errors %}
+                <div class="error-msg mt-4">
+                    <ul>
+                        {% for field in form %}
+                            {% if field.errors %}
+                                <li>{{ field.errors }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </form>
+
+        <!-- Additional links (optional) -->
+        <div class="mt-4 text-center text-sm text-gray-400">
+            <p>Don't have an account? <a href="{% url 'signup' %}" class="text-blue-600 hover:underline">Sign up</a></p>
+        </div>
+    </div>
+
+</body>
+</html>
